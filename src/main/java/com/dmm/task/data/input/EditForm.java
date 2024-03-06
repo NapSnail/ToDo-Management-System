@@ -1,6 +1,6 @@
 package com.dmm.task.data.input;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ public class EditForm {
 	
 	private String title;
 	private String text;
-	private LocalDateTime date;
+	private LocalDate date;
 	private Boolean done;
 
 }

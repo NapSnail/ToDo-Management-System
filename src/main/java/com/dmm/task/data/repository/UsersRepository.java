@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.dmm.task.data.entity.Users;
 
 @Repository
-public interface UserRepository extends JpaRepository<Users, String> {
+public interface UsersRepository extends JpaRepository<Users, String> {
 
 }
