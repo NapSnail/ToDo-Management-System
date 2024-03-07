@@ -26,7 +26,7 @@ public class MainController {
 	private TaskRepository trepo;
 
 	@GetMapping("/main")
-	public String mainPage(@AuthenticationPrincipal AccountUserDetails user,Model model) {
+	public String mainPage(@AuthenticationPrincipal AccountUserDetails user, Model model) {
 		YearMonth toMonth = YearMonth.now();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月");
 		String month = dtf.format(toMonth);
@@ -55,6 +55,11 @@ public class MainController {
 		
 		MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<LocalDate, Tasks>();
 		List<Tasks> task = trepo.findByDateBetween(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay(), user.getUsername());
+		
+		if(user.getUsername().equals("admin")) {
+			
+			task = trepo.findByDateBetweenAd(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay());
+		}
 		
 		timer.setUpTasks(tasks, task);
 		
