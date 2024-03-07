@@ -54,7 +54,7 @@ public class MainController {
 		
 		
 		MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<LocalDate, Tasks>();
-		List<Tasks> task = trepo.findByDateBetween(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay(), user.getName());
+		List<Tasks> task = trepo.findByDateBetween(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay(), user.getUsername());
 		
 		timer.setUpTasks(tasks, task);
 		
