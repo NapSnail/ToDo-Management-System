@@ -26,9 +26,7 @@ public class CreateController {
 	public String create (Model model,
 			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 		
-		CreateForm form = new CreateForm();
-		model.addAttribute("createForm", form);
-
+		
 		return "create";
 	}
 
