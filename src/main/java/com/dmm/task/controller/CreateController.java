@@ -1,9 +1,9 @@
 package com.dmm.task.controller;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,26 +23,26 @@ public class CreateController {
 	private TaskRepository repo;
 
 	@GetMapping("/main/create/{date}")
-	public String create (@PathVariable("date") String date,  Model model) {
+	public String create (Model model,
+			@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate toDay = LocalDate.parse(date, dtf);
-		
-		CreateForm createForm = new CreateForm();
-		createForm.setDate(toDay);
-		model.addAttribute("createForm", createForm);
+		CreateForm form = new CreateForm();
+		model.addAttribute("createForm", form);
 
 		return "create";
 	}
 
 	@PostMapping("/main/create")
-	public String task(CreateForm createForm, @AuthenticationPrincipal AccountUserDetails user, Model model) {
-
+	public String task(CreateForm createForm,
+			@AuthenticationPrincipal AccountUserDetails user, Model model) {
+		
+		createForm.setDates(LocalDate.parse(createForm.getDate()));
+		
 		Tasks task = new Tasks();
 		task.setTitle(createForm.getTitle());
-		task.setName(user.getName());
+		task.setName(user.getUsername());
 		task.setText(createForm.getText());
-		task.setDate(createForm.getDate().atStartOfDay());
+		task.setDate(createForm.getDates().atStartOfDay());
 		task.setDone(false);
 
 		repo.save(task);

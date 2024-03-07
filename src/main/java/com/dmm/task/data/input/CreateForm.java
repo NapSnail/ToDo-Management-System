@@ -8,7 +8,10 @@ import lombok.Data;
 public class CreateForm {
 	
 	private String title;
-	private String text;
-	private LocalDate date;
 	
+	private String date;
+	
+	private String text;
+	
+	private LocalDate dates;
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.dmm.task.data.entity.Tasks;
+import com.dmm.task.data.input.EditForm;
 import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.service.AccountUserDetails;
 
@@ -22,11 +23,14 @@ public class EditController {
 	public String editPage(@PathVariable("id") Integer id,   Model model) {
 		
 		Tasks task = repo.getById(id);
+		EditForm form = new EditForm();
 		
-		task.getTitle();
-		task.getDate();
-		task.getText();
-		task.getDone();
+		form.setId(task.getId());
+		form.setTitle(task.getTitle());
+		form.setDate(task.getDate().toLocalDate());
+		form.setText(task.getText());
+		form.setDone(task.getDone());
+		
 		model.addAttribute("task", task);
 		
 		
@@ -34,11 +38,16 @@ public class EditController {
 	}
 	
 	@PostMapping("/main/edit/{id}")
-	public String edit(@AuthenticationPrincipal AccountUserDetails user, Model model) {
+	public String edit(@PathVariable("id") Integer id, EditForm editForm, @AuthenticationPrincipal AccountUserDetails user, Model model) {
 		
+		Tasks task = repo.getById(id);
 		
+		task.setTitle(editForm.getTitle());
+		task.setDate(editForm.getDate().atStartOfDay());
+		task.setText(editForm.getText());
+		task.setDone(editForm.getDone());
 		
-		
+		repo.save(task);
 		
 		return "redirect:/main";
 	}
