@@ -1,5 +1,7 @@
 package com.dmm.task.controller;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +20,7 @@ public class EditController {
 	public TaskRepository repo;
 	
 	@GetMapping("/main/edit/{id}")
-	public String editPage(Model model, @PathVariable("id") Integer id) {
+	public String editPage(Model model, @PathVariable("id")Integer id) {
 		
 		Tasks task = repo.getById(id);
 		model.addAttribute("task", task);
@@ -27,21 +29,22 @@ public class EditController {
 	}
 	
 	@PostMapping("/main/edit/{id}")
-	public String edit( EditForm editForm, Model model, @PathVariable("id") Integer id) {
+	public String edit( EditForm editForm, Model model,@PathVariable("id")Integer id ) {
 		
+		editForm.setDates(LocalDate.parse(editForm.getDate()));
 		Tasks task = repo.getById(id);
 		
 		task.setTitle(editForm.getTitle());
-		task.setDate(editForm.getDate());
+		task.setDate(editForm.getDates().atStartOfDay());
 		task.setText(editForm.getText());
 		task.setDone(editForm.getDone());
 		
-		repo.save(task);
+		repo.saveAndFlush(task);
 		
 		return "redirect:/main";
 	}
 	
-	@PostMapping("/main/edit/delete/{id}")
+	@PostMapping("/main/delete/{id}")
 	public String delete(@PathVariable("id") Integer id) {
 		
 		repo.deleteById(id);

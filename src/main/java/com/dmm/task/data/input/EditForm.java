@@ -1,6 +1,6 @@
 package com.dmm.task.data.input;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import javax.validation.constraints.Size;
 
@@ -16,7 +16,11 @@ public class EditForm {
 	private String title;
 	@Size(min = 1)
 	private String text;
-	private LocalDateTime date;
-	private Boolean done;
+	
+	private LocalDate dates;
+	
+	private String date;
+	
+	private Boolean done = false;
 
 }
