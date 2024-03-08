@@ -18,6 +18,12 @@ public class Timer {
 	private LocalDate firstDay = toDay.withDayOfMonth(1);
 	private LocalDate lastDay = firstDay.plusDays(toDay.lengthOfMonth() - 1);
 	
+	public Timer(LocalDate date) {
+		this.toDay = date;
+		this.firstDay = toDay.withDayOfMonth(1);
+		this.lastDay = firstDay.plusDays(toDay.lengthOfMonth() - 1);
+	}
+	
 	//その月のカレンダーの最初になる日
 	public LocalDate callenderTopDay() {
 		DayOfWeek whatTopDay = this.firstDay.getDayOfWeek();

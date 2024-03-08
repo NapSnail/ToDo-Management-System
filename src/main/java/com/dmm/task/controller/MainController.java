@@ -8,17 +8,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dmm.task.data.Timer;
 import com.dmm.task.data.entity.Tasks;
 import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.service.AccountUserDetails;
+
 @Controller
 public class MainController {
 
@@ -26,14 +29,31 @@ public class MainController {
 	private TaskRepository trepo;
 
 	@GetMapping("/main")
-	public String mainPage(@AuthenticationPrincipal AccountUserDetails user, Model model) {
-		YearMonth toMonth = YearMonth.now();
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年MM月");
-		String month = dtf.format(toMonth);
+	public String mainPage(
+			@RequestParam(name = "date", defaultValue = "#{T(java.time.LocalDate).now()}", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+			@AuthenticationPrincipal AccountUserDetails user, Model model) {
+
+		LocalDate toMonth = date;
+
+		LocalDate prev = toMonth.minusMonths(1);
+		model.addAttribute("prev", prev);
+		LocalDate next = toMonth.plusMonths(1);
+		model.addAttribute("next", next);
+
+		if (!(toMonth.equals(date))) {
+			if (date.equals(prev)) {
+				toMonth = prev;
+			} else {
+				toMonth = next;
+			}
+
+		};
+
+		DateTimeFormatter dtfYM = DateTimeFormatter.ofPattern("yyyy年MM月");
+		String month = dtfYM.format(YearMonth.from(toMonth));
 		model.addAttribute("month", month);
-		
-		
-		Timer timer = new Timer();
+
+		Timer timer = new Timer(toMonth);
 		List<List<LocalDate>> matrix = new ArrayList<>();
 		List<LocalDate> week1 = new ArrayList<>();
 		List<LocalDate> week2 = new ArrayList<>();
@@ -51,24 +71,21 @@ public class MainController {
 
 		matrix.addAll(Arrays.asList(week1, week2, week3, week4, week5, week6));
 		model.addAttribute("matrix", matrix);
-		
-		
+
 		MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<LocalDate, Tasks>();
-		List<Tasks> task = trepo.findByDateBetween(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay(), user.getUsername());
-		
-		if(user.getUsername().equals("admin")) {
-			
-			task = trepo.findByDateBetweenAd(week1.get(0).atStartOfDay(),week6.get(6).atStartOfDay());
+		List<Tasks> task = trepo.findByDateBetween(week1.get(0).atStartOfDay(), week6.get(6).atStartOfDay(),
+				user.getUsername());
+
+		if (user.getUsername().equals("admin")) {
+
+			task = trepo.findByDateBetweenAd(week1.get(0).atStartOfDay(), week6.get(6).atStartOfDay());
 		}
-		
+
 		timer.setUpTasks(tasks, task);
-		
+
 		model.addAttribute("tasks", tasks);
-		
 
 		return "main";
 	}
-	
-	
 
 }
